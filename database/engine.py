@@ -8,4 +8,8 @@ class engine:
 
     def create(self):
         url = f"mariadb+asyncmy://{config.db_username}:{config.db_password}@{config.db_host}:{config.db_name}/{config.db_name}?charset=utf8mb4"
-        self.engine = create_async_engine(url)
+        self.engine = create_async_engine(
+            url,
+            echo=True,
+            echo_pool=True
+        )
