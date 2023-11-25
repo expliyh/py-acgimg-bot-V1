@@ -4,3 +4,4 @@ aiofiles~=23.2.1
 asyncmy~=0.2.8
 aiohttp~=3.9.0
 aiomysql~=0.2.0
+python-telegram-bot[ext]~=20.6
