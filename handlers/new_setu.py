@@ -92,7 +92,9 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=update.effective_chat.id,
             photo=await image.read(),
             caption=info_caption,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
+            write_timeout=60,
+            read_timeout=60
         )
         new_current_message.message_id = p_msg.id
         await database.update_current_message(current_message=new_current_message)
