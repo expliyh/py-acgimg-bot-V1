@@ -1,4 +1,6 @@
-FROM ubuntu:latest
+FROM python:3.12-bookworm
 LABEL authors="Expliyh"
-
-ENTRYPOINT ["top", "-b"]
+ADD . /workdir
+WORKDIR /workdir
+RUN pip install -r requirements.txt
+ENTRYPOINT ["python3", "/workdir/bot.py"]
