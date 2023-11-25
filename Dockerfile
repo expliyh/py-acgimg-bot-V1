@@ -10,4 +10,6 @@ ENV DATABASE_USERNAME=your_username
 ENV DATABASE_PASSWORD=your_password
 ENV PIXIV_API_URL=""
 ENV TELEGRAM_BOT_TOKEN=your_telegram_token
+RUN mkdir tmp
+VOLUME /workdir/tmp
 ENTRYPOINT ["python3", "/workdir/bot.py"]
