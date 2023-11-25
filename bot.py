@@ -62,4 +62,4 @@ if __name__ == '__main__':
     for i in handlers:
         app.add_handler(i)
 
-    app.run_polling()
+    app.run_polling(timeout=60,write_timeout=60)
