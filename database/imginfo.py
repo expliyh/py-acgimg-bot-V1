@@ -15,7 +15,7 @@ ModelBase = declarative_base()  # <-元类
 
 class ImageInfo(ModelBase):
     __tablename__ = "image_info"
-    id:Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    image_id:Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     filename:Mapped[str] = mapped_column(Text)
     link:Mapped[str] = mapped_column(Text)
     helloimg_link:Mapped[str] = mapped_column(Text)
