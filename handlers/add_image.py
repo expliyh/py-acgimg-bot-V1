@@ -165,7 +165,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
             text="请注意：您上传的图片页数大于一,为%d，目前仅支持保存第一页，敬请谅解。" % illust_detail.meta_pages
         )
         db_image_info.original_url = illust_detail.meta_pages[0]['original_image_url']
-    db_image_info.raw_reply = json.dumps((await pixiv_api.get_raw(pixiv_id)).__dict__)
+    db_image_info.raw_reply = json.dumps((await pixiv_api.get_raw(pixiv_id)))
     await database.add_image_info(db_image_info)
     await context.bot.send_message(
         chat_id=update.effective_chat.id,

@@ -1,5 +1,6 @@
 # 这是一个示例 Python 脚本。
 import asyncio
+import json
 
 import chat_stats
 # 按 Shift+F10 执行或将其替换为您的代码。
@@ -19,21 +20,8 @@ def print_hi(name):
 if __name__ == '__main__':
     print_hi('PyCharm')
     database.create()
-    db_class.create_table()
-    debug_info = ImageInfo()
-    debug_info.name = "debug"
-    debug_info.link = "http://localhost/debug.png"
-    debug_info.author = "debug_author"
-    # debug_info.image_id = 114514
-    debug_info.author_id = 1919810
-    debug_info.caption = "JNTM"
-    debug_info.filename = "debug.png"
-    debug_info.helloimg_link = "debuglink"
-    debug_info.original_url = "originurl"
-    debug_info.sap_ori = False
-    debug_info.pixiv_id = 1919810
-    debug_info.raw_reply = "{sss}"
     loop = asyncio.get_event_loop()
-    pool = loop.run_until_complete(database.add_image_info(debug_info))
+    pool = loop.run_until_complete(pixiv_api.get_raw(112900318))
+    print(json.dumps(pool))
 
 # 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
