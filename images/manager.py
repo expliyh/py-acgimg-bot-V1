@@ -109,7 +109,23 @@ async def __download_file_old(image_id: int, path: str, ori: bool = False):
     return
 
 
-async def get_origin(id: int):
+async def get_origin(image_id: int):
+    image_info = await database.get_image_info_by_id(image_id)
+    lock_id = 'img_' + str(image_id)
+    lock: asyncio.Lock | None = __tasks.get('img_' + str(image_id))
+    if lock is None:
+        __tasks['img_' + str(image_id)] = asyncio.Lock()
+        lock: asyncio.Lock = __tasks.get('img_' + str(image_id))
+    await lock.acquire()
+    path = __path + image_info.filename
+    send_path = None
+    if not os.path.exists(path):
+        await __download_file(image_id)
+    lock.release()
+    return await aiofiles.open(path, 'rb')
+
+
+async def get_origin_old(id: int):
     lock_id = 'ori_' + str(id)
     lock: asyncio.Lock | None = __tasks.get(lock_id)
     if lock is not None and lock.locked():
