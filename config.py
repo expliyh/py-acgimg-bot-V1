@@ -14,6 +14,7 @@ class __Config:
         self.db_password = os.getenv('DATABASE_PASSWORD')
         self.db_name = os.getenv('DATABASE_NAME')
         self.py_api_url = os.getenv('PIXIV_API_URL')
+        self.pixiv_token = os.getenv('PIXIV_TOKEN')
         self.bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
         self.developer_chat_id = os.getenv('DEVELOPER_CHAT_ID')
 
