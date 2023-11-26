@@ -40,6 +40,13 @@ class CachedIllustDetail:
             self.cached_time = datetime.now()
             self.call_cnt = 0
 
+    def get_origin_link(self):
+        if self.page_count == 1:
+            original_url = self.meta_single_page['original_image_url']
+        else:
+            original_url = self.meta_pages[0]['original_image_url']
+        return original_url
+
 
 @singleton
 class IllustDetailCache:

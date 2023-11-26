@@ -96,7 +96,7 @@ async def submit_pixiv_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_document(
         chat_id=update.effective_chat.id,
         document=file_byte,
-        filename=str(pixiv_id) + '.png',
+        filename=str(pixiv_id) + os.path.splitext(original_url)[-1],
         write_timeout=120, read_timeout=60
     )
     chat_status.set_stats(
@@ -148,7 +148,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     illust_detail = await pixiv_api.get_illust_info_by_pixiv_id(pixiv_id)
     db_image_info = ImageInfo()
-    db_image_info.filename = str(pixiv_id) + '.png'
+    db_image_info.filename = str(pixiv_id) + os.path.splitext(illust_detail.get_origin_link())[-1]
     db_image_info.link = link
     db_image_info.name = illust_detail.title
     db_image_info.author = illust_detail.author_name

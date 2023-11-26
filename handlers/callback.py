@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os.path
 
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
@@ -76,7 +77,7 @@ async def get_origin(update: Update, context: ContextTypes.DEFAULT_TYPE, query: 
         else:
             logging.info('正在修改键盘')
             image_info = await images.get_image_info(queue_info.image_id)
-            image_name = str(image_info.pixiv_id) + '.png'
+            image_name = str(image_info.name) + os.path.splitext(image_info.filename)[-1]
             logging.info(image_name)
             send_task = asyncio.create_task(
                 context.bot.send_document(chat_id=chat_id, document=await ori.read(), filename=image_name,
