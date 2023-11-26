@@ -115,13 +115,12 @@ async def get_origin(image_id: int):
     lock: asyncio.Lock | None = __tasks.get('img_' + str(image_id))
     if lock is None:
         __tasks['img_' + str(image_id)] = asyncio.Lock()
-        lock: asyncio.Lock = __tasks.get('img_' + str(image_id))
-    await lock.acquire()
+    await __tasks['img_' + str(image_id)].acquire()
     path = __path + image_info.filename
     send_path = None
     if not os.path.exists(path):
         await __download_file(image_id)
-    lock.release()
+    __tasks['img_' + str(image_id)].release()
     return await aiofiles.open(path, 'rb')
 
 
@@ -151,7 +150,7 @@ async def get_image(image_id: int):
     if lock is None:
         __tasks['img_' + str(image_id)] = asyncio.Lock()
         lock: asyncio.Lock = __tasks.get('img_' + str(image_id))
-    await lock.acquire()
+    await __tasks['img_' + str(image_id)].acquire()
     path = __path + image_info.filename
     send_path = None
     if not os.path.exists(path):
@@ -164,7 +163,7 @@ async def get_image(image_id: int):
             send_path = compressed_path
         else:
             send_path = path
-    lock.release()
+    __tasks['img_' + str(image_id)].release()
     return await aiofiles.open(send_path, 'rb')
 
 
