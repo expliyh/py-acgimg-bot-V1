@@ -126,7 +126,11 @@ class engine:
         async with async_session() as session:
             result = await session.execute(select(IllustInfo).filter(IllustInfo.pixiv_id == pixiv_id))
             illust_info = result.scalars().first()
-
+        try:
+            if illust_info.pixiv_id != pixiv_id:
+                return None
+        except AttributeError:
+            return None
         return illust_info
 
 

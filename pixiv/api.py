@@ -9,7 +9,7 @@ from .illust_detail_cache import *
 @singleton
 class PixivAPI:
     def __init__(self):
-        self.enable = True
+        self.enable = False
         if config.pixiv_token is None or config.pixiv_token == '':
             self.__api = None
             if config.py_api_url is None or config.py_api_url == '':
@@ -22,7 +22,12 @@ class PixivAPI:
 
         self.__cache = IllustDetailCache()
 
+    async def get_raw(self, pixiv_id: int):
+        return self.__api.illust_detail(pixiv_id)
+
     async def get_illust_info_by_pixiv_id(self, pixiv_id: int, force_refresh=False, force_deep_refresh=False):
+        if not self.enable:
+            raise Exception
         illust_info = None
         if not force_refresh:
             illust_info = self.__cache.get_cache_by_pixiv_id(pixiv_id)
@@ -42,3 +47,6 @@ class PixivAPI:
         else:
             pass
         return illust_info
+
+
+pixiv_api = PixivAPI()

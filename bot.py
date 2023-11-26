@@ -7,13 +7,14 @@ import sys
 
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 
 from config import config
 import database as db_class
 from database import *
 import handlers
 import convert
+from pixiv import PixivAPI, pixiv_api
 
 app = ApplicationBuilder().token(config.bot_token).get_updates_read_timeout(15.0).build()
 
@@ -140,8 +141,14 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler("debug", debug_start))
     app.add_handler(CommandHandler("bad_command", bad_command))
     app.add_handler(CommandHandler("info", handlers.get_info))
+    app.add_handler(CommandHandler("add", handlers.submit_pixiv_id))
+    app.add_handler(MessageHandler(filters.TEXT, callback=handlers.message_handler))
 
     # ...and the error handler
     app.add_error_handler(error_handler)
+
+    pixapi = PixivAPI()
+    pixapi.enable = True
+    pixiv_api.enable = True
 
     app.run_polling(timeout=60, write_timeout=60)
