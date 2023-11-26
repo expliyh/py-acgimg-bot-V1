@@ -5,3 +5,4 @@ asyncmy~=0.2.8
 aiohttp~=3.9.0
 aiomysql~=0.2.0
 python-telegram-bot[ext]~=20.6
+pillow~=10.1.0
