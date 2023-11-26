@@ -79,16 +79,24 @@ async def get_origin(update: Update, context: ContextTypes.DEFAULT_TYPE, query: 
             image_name = str(image_info.pixiv_id) + '.png'
             logging.info(image_name)
             send_task = asyncio.create_task(
-                context.bot.send_document(chat_id=chat_id, document=await ori.read(), filename=image_name)
+                context.bot.send_document(chat_id=chat_id, document=await ori.read(), filename=image_name,
+                                          write_timeout=120, read_timeout=60)
             )
             message_edit_task = asyncio.create_task(context.bot.edit_message_reply_markup(
                 chat_id=chat_id,
                 message_id=update.callback_query.message.message_id,
                 reply_markup=InlineKeyboardMarkup(
-                    inline_keyboard=already_get_origin_keyboard()
+                    inline_keyboard=sending_origin_keyboard()
                 )
             ))
             await asyncio.gather(send_task, message_edit_task)
+            await context.bot.edit_message_reply_markup(
+                chat_id=chat_id,
+                message_id=update.callback_query.message.message_id,
+                reply_markup=InlineKeyboardMarkup(
+                    inline_keyboard=already_get_origin_keyboard()
+                )
+            )
     except KeyError:
         await update.callback_query.answer(text="错误：回调函数结构不正确！", show_alert=False)
     except images.FailedToDownload as ex:

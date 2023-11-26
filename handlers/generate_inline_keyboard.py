@@ -40,6 +40,21 @@ def already_get_origin_keyboard():
     ]
 
 
+def sending_origin_keyboard():
+    return [
+        [
+            InlineKeyboardButton(
+                text='原图发送中，请耐心等待',
+                callback_data=json.dumps(
+                    {
+                        'op': 'agto'
+                    }
+                )
+            )
+        ]
+    ]
+
+
 def getting_origin_keyboard():
     return [
         [
