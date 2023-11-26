@@ -132,13 +132,14 @@ if __name__ == '__main__':
     database.create()
     db_class.create_table()
     convert.init()
-    handlers = get_handlers()
-    for i in handlers:
+    handlers_list = get_handlers()
+    for i in handlers_list:
         app.add_handler(i)
 
     # Register the commands...
     app.add_handler(CommandHandler("debug", debug_start))
     app.add_handler(CommandHandler("bad_command", bad_command))
+    app.add_handler(CommandHandler("info", handlers.get_info))
 
     # ...and the error handler
     app.add_error_handler(error_handler)

@@ -9,6 +9,7 @@ ENV DATABASE_NAME=your_database_name
 ENV DATABASE_USERNAME=your_username
 ENV DATABASE_PASSWORD=your_password
 ENV PIXIV_API_URL=""
+ENV PIXIV_TOKEN=""
 ENV TELEGRAM_BOT_TOKEN=your_telegram_token
 ENV DEVELOPER_CHAT_ID=""
 ENV TZ=Asia/Shanghai
