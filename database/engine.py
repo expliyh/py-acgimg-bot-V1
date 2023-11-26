@@ -4,8 +4,10 @@ from sqlalchemy import select, update, create_engine, func
 from sqlalchemy.dialects.mysql import insert
 from . import imginfo
 from . import current_message
+from . import illustinfo
 from .imginfo import ImageInfo
 from .current_message import CurrentMessage
+from .illustinfo import IllustInfo
 import asyncmy
 
 
@@ -112,6 +114,21 @@ class engine:
             await session.commit()
         return
 
+    async def add_illust_info(self, illust_info: ImageInfo):
+        async_session = self.new_session()
+        async with async_session() as session:
+            session.add(illust_info)
+            await session.commit()
+        return
+
+    async def get_illust_info_by_pixiv_id(self, pixiv_id: int) -> IllustInfo | None:
+        async_session = self.new_session()
+        async with async_session() as session:
+            result = await session.execute(select(IllustInfo).filter(IllustInfo.pixiv_id == pixiv_id))
+            illust_info = result.scalars().first()
+
+        return illust_info
+
 
 database = engine()
 
@@ -119,3 +136,4 @@ database = engine()
 def create_table():
     imginfo.ModelBase.metadata.create_all(get_none_async_engine())
     current_message.ModelBase.metadata.create_all(get_none_async_engine())
+    illustinfo.ModelBase.metadata.create_all(get_none_async_engine())
