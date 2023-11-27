@@ -12,13 +12,15 @@ from sqlalchemy.orm import mapped_column
 
 import json
 
+from config import config
+
 
 class ModelBase(DeclarativeBase):
     pass
 
 
 class IllustInfo(ModelBase):
-    __tablename__ = "pixiv_api_cache"
+    __tablename__ = f"{config.db_prefix}pixiv_api_cache"
     pixiv_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     title: Mapped[str] = mapped_column(Text)
     caption: Mapped[str] = mapped_column(Text)

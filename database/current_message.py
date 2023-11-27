@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 import datetime
 
+from config import config
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, Integer, String, DateTime, Text, BigInteger, Boolean, TIMESTAMP, text, func
 from sqlalchemy.dialects.mysql import LONGTEXT
@@ -16,7 +17,7 @@ class ModelBase(DeclarativeBase):
 
 
 class CurrentMessage(ModelBase):
-    __tablename__ = "current_message"
+    __tablename__ = f"{config.db_prefix}current_message"
     chat_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     message_id: Mapped[int] = mapped_column(Integer)
     image_id: Mapped[int] = mapped_column(Integer)

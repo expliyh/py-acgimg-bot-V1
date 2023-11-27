@@ -12,6 +12,7 @@ ENV PIXIV_API_URL=""
 ENV PIXIV_TOKEN=""
 ENV TELEGRAM_BOT_TOKEN=your_telegram_token
 ENV DEVELOPER_CHAT_ID=""
+ENV DATABASE_PREFIX=""
 ENV TZ=Asia/Shanghai
 RUN mkdir tmp
 VOLUME /workdir/tmp
