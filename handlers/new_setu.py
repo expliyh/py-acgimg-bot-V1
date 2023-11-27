@@ -78,7 +78,7 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         queue_update_task = asyncio.create_task(
             database.update_current_message(current_message=new_current_message)
         )
-        image_task = asyncio.create_task(images.get_image(setu_id, sub_id))
+        image_task = asyncio.create_task(images.get_image(setu_id, int(sub_id)))
         future = asyncio.gather(image_task, queue_update_task)
         logging.info("Getting setu: %s" % setu_id)
         reply_markup = InlineKeyboardMarkup(get_origin_keyboard(update.effective_chat.id))

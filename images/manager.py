@@ -116,7 +116,7 @@ async def get_origin(image_id: int, sub_id: int):
     if lock is None:
         __tasks['img_' + str(image_id)] = asyncio.Lock()
     await __tasks['img_' + str(image_id)].acquire()
-    path = __path + image_info.filename
+    path = __path + image_info.filenames[sub_id]
     send_path = None
     if not os.path.exists(path):
         await __download_file(image_id, sub_id)
