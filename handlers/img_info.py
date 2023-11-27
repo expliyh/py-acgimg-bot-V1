@@ -22,7 +22,7 @@ async def get_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     cmd = context.args
     if cmd is None or cmd == "":
         return
-    tmp = await pixiv_api.get_illust_info_by_pixiv_id(int(cmd[0]))
-    message = str(tmp.__dict__)
+    tmp = await pixiv_api.get_raw(int(cmd[0]))
+    message = str(tmp)
     await context.bot.send_message(chat_id=config.developer_chat_id, text=message)
     return
