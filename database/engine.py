@@ -49,13 +49,27 @@ class engine:
 
         return img_info
 
-    async def get_image_info_by_filename(self, filename: str):
+    async def get_image_info_by_pixiv_id(self, pixiv_id: int):
         async_session = self.new_session()
         async with async_session() as session:
-            result = await session.execute(select(ImageInfo).filter(ImageInfo.filename == filename))
+            result = await session.execute(select(ImageInfo).filter(ImageInfo.pixiv_id == pixiv_id))
             img_info = result.scalars().first()
 
         return img_info
+
+    async def add_link_and_filename_by_pixiv_id(self, pixiv_id: int, link: str, filename: str):
+        async_session = self.new_session()
+        async with async_session() as session:
+            result = await session.execute(select(ImageInfo).filter(ImageInfo.pixiv_id == pixiv_id))
+            img_info = result.scalars().first()
+            filenames: list = img_info.filenames
+            links: list = img_info.links
+            filenames.append(filename)
+            links.append(link)
+            img_info.links = links
+            img_info.filenames = filenames
+            await session.commit()
+        return
 
     async def add_image_info(self, image_info: ImageInfo):
         async_session = self.new_session_no_expire_on_commit()

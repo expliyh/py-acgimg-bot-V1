@@ -65,7 +65,10 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         cmd = context.args
         if len(cmd) > 0:
             setu_id = cmd[0]
-        image_info_task = asyncio.create_task(database.get_image_info_by_id(setu_id))
+        image_info = await database.get_image_info_by_id(setu_id)
+        sub_id = random.randint(0, image_info.page_count - 1)
+        if len(cmd) > 1:
+            sub_id = cmd[1]
         new_current_message = CurrentMessage(
             chat_id=update.effective_chat.id,
             message_id=update.message.id,
@@ -74,11 +77,11 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         queue_update_task = asyncio.create_task(
             database.update_current_message(current_message=new_current_message)
         )
-        image_task = asyncio.create_task(images.get_image(setu_id))
-        future = asyncio.gather(image_info_task, image_task, queue_update_task)
+        image_task = asyncio.create_task(images.get_image(setu_id, sub_id))
+        future = asyncio.gather(image_task, queue_update_task)
         logging.info("Getting setu: %s" % setu_id)
         reply_markup = InlineKeyboardMarkup(get_origin_keyboard(update.effective_chat.id))
-        image_info, image, _ = await future
+        image, _ = await future
         info_caption = "%s\n" \
                        "画师: %s\n" \
                        "图片链接: %s\n" \

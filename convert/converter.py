@@ -29,7 +29,7 @@ async def do_convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
     image_info_in_new_format.original_url = dict_info["original_url"]
     image_info_in_new_format.raw_reply = dict_info["reply"]
 
-    exist_info = await database.get_image_info_by_filename(image_info_in_new_format.filename)
+    exist_info = await database.get_image_info_by_pixiv_id(image_info_in_new_format.filename)
     try:
         if exist_info is not None:
             message = "图片已存在！"

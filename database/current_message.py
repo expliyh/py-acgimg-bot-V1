@@ -20,14 +20,16 @@ class CurrentMessage(ModelBase):
     chat_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     message_id: Mapped[int] = mapped_column(Integer)
     image_id: Mapped[int] = mapped_column(Integer)
+    sub_id: Mapped[int] = mapped_column(Integer)
     send_time = Column(TIMESTAMP, server_default=text('CURRENT_TIMESTAMP'), comment='发送时间')
     pending: Mapped[bool] = mapped_column(Boolean, comment="是否有正在进行的原图请求")
     downloaded: Mapped[bool] = mapped_column(Boolean)
 
-    def __init__(self, chat_id, message_id, image_id, **kw):
+    def __init__(self, chat_id, message_id, image_id, sub_id, **kw):
         super().__init__(**kw)
         self.chat_id = chat_id
         self.message_id = message_id
         self.image_id = image_id
+        self.sub_id = sub_id
         self.pending = False
         self.downloaded = False

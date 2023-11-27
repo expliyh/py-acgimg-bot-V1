@@ -40,11 +40,11 @@ class CachedIllustDetail:
             self.cached_time = datetime.now()
             self.call_cnt = 0
 
-    def get_origin_link(self):
+    def get_origin_link(self, sub_id: int = 0):
         if self.page_count == 1:
             original_url = self.meta_single_page['original_image_url']
         else:
-            original_url = self.meta_pages[0]['original_image_url']
+            original_url = self.meta_pages[sub_id]['image_urls']['original']
         return original_url
 
 

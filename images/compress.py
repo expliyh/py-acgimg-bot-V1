@@ -33,13 +33,13 @@ def compress_image_to_target_size(img_path, out_path, target_size=5000, step=5, 
     return
 
 
-def auto_compress_for_telegram_photo(img_path, image_id: int):
+def auto_compress_for_telegram_photo(img_path, image_id: int, sub_id: int):
     """
     将图像压缩为Telegram可发送图片大小，保存在__path/compressed_<image_id>.jpg
     :param img_path: 输入图片的路径
     :param image_id: 图片ID
     :return:
     """
-    out_path = __path + 'compressed_' + str(image_id) + '.jpg'
+    out_path = f"{__path}compressed_{str(image_id)}_{str(sub_id)}.jpg"
     compress_image_to_target_size(img_path, out_path, 9000)
     return
