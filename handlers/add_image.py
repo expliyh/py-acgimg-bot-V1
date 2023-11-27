@@ -46,7 +46,7 @@ async def submit_pixiv_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if illust_detail.page_count == 1:
         original_url = illust_detail.meta_single_page['original_image_url']
     else:
-        original_url = illust_detail.meta_pages[0]['original_image_url']
+        original_url = illust_detail.meta_pages[0]['image_urls']['original']
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="请注意：您提交的图片页数大于一，目前仅支持保存第一页，敬请谅解。"
