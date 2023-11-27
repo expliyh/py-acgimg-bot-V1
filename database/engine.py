@@ -66,9 +66,13 @@ class engine:
             links: list = img_info.links
             filenames.append(filename)
             links.append(link)
-            img_info.links = links
-            img_info.filenames = filenames
+            update_stmt = update(ImageInfo).where(ImageInfo.pixiv_id == pixiv_id).values(
+                links=links,
+                filenames=filenames
+            )
+            await session.execute(update_stmt)
             await session.commit()
+            await session.close()
         return
 
     async def add_image_info(self, image_info: ImageInfo):
@@ -98,6 +102,7 @@ class engine:
         async with async_session() as session:
             session.add(current_message)
             await session.commit()
+            await session.close()
         return
 
     async def update_current_message(self, current_message: CurrentMessage):
@@ -107,18 +112,21 @@ class engine:
                 chat_id=current_message.chat_id,
                 message_id=current_message.message_id,
                 image_id=current_message.image_id,
+                sub_id=current_message.sub_id,
                 pending=False,
                 downloaded=False
             )
             update_stmt = insert_stmt.on_duplicate_key_update(
                 message_id=current_message.message_id,
                 image_id=current_message.image_id,
+                sub_id=current_message.sub_id,
                 send_time=func.current_timestamp(),
                 pending=False,
                 downloaded=False
             )
             await session.execute(update_stmt)
             await session.commit()
+            await session.close()
         return
 
     async def set_pending(self, chat_id: int, pending: bool):
@@ -126,6 +134,7 @@ class engine:
         async with async_session() as session:
             await session.execute(update(CurrentMessage).values(pending=pending))
             await session.commit()
+            await session.close()
         return
 
     async def add_illust_info(self, illust_info: ImageInfo):
@@ -133,6 +142,7 @@ class engine:
         async with async_session() as session:
             session.add(illust_info)
             await session.commit()
+            await session.close()
         return
 
     async def get_illust_info_by_pixiv_id(self, pixiv_id: int) -> IllustInfo | None:
@@ -141,7 +151,7 @@ class engine:
             result = await session.execute(select(IllustInfo).filter(IllustInfo.pixiv_id == pixiv_id))
             illust_info = result.scalars().first()
         try:
-            if illust_info.pixiv_id != pixiv_id:
+            if int(illust_info.pixiv_id) != pixiv_id:
                 return None
         except AttributeError:
             return None

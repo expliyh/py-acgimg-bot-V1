@@ -34,7 +34,7 @@ async def submit_pixiv_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=update.effective_chat.id, text="错误：只有管理员可以进行此操作")
         return
     pixiv_id = context.args[0]
-    if await database.get_illust_info_by_pixiv_id(pixiv_id) is not None:
+    if await database.get_image_info_by_pixiv_id(int(pixiv_id)) is not None:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="错误：重复提交")
         return
     try:
@@ -61,56 +61,69 @@ async def submit_pixiv_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
     global __session
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="稍后我将向您发送您提供的图片，请按顺序将图片上传到图床后将链接按顺序发送给我"
+    )
     for i in range(illust_detail.page_count):
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="正在下载图片 %d" % i
+        )
         parsed_url = urlparse(original_urls[i])
         suffix = os.path.splitext(original_urls[i])[-1]
         proxy_url = parsed_url.scheme + '://' + pixiv_image_proxy_host + parsed_url.path
         cnt = 0
         latest_code = -1
         cnt_max = 5
-        while 0 <= cnt < cnt_max:
-            try:
-                async with __session.get(proxy_url) as response:
-                    code = response.status
-                    latest_code = code
-                    match code:
-                        case 200:
-                            cnt = -100
-                            file_byte = await response.read()
-                        case _:
-                            cnt += 1
-                    response.close()
-            except aiohttp.ClientError as ex:
-                cnt += 1
-                if cnt >= cnt_max:
-                    raise ex
-        if latest_code != 200:
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=("出错：无法下载图片，请检查后重试 "
-                      "%d" % latest_code)
-            )
-            return
-        save_path = path + "submitted_%d_%d.%s" % (illust_detail.pixiv_id, i, suffix)
-        if cnt >= cnt_max:
-            if os.path.exists(path):
-                os.remove(path)
-            raise FailedToDownload(code)
+        save_path = path + "submitted_%d_%d%s" % (illust_detail.pixiv_id, i, suffix)
+        if not os.path.exists(save_path):
+            while 0 <= cnt < cnt_max:
+                try:
+                    async with __session.get(proxy_url) as response:
+                        code = response.status
+                        latest_code = code
+                        match code:
+                            case 200:
+                                cnt = -100
+                                file_byte = await response.read()
+                            case _:
+                                cnt += 1
+                        response.close()
+                except aiohttp.ClientError as ex:
+                    cnt += 1
+                    if cnt >= cnt_max:
+                        raise ex
+            if latest_code != 200:
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=("出错：无法下载图片，请检查后重试 "
+                          "%d" % latest_code)
+                )
+                return
+            if cnt >= cnt_max:
+                if os.path.exists(path):
+                    os.remove(path)
+                raise FailedToDownload(code)
 
-        file = await aiofiles.open(save_path, mode="+wb")
-        await file.write(file_byte)
-        await file.close()
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id,
-        text="稍后我将向您发送您提供的图片，请按顺序将图片上传到图床后将链接按顺序发送给我"
-    )
-    for i in original_urls:
+            file = await aiofiles.open(save_path, mode="+wb")
+            await file.write(file_byte)
+        else:
+            file = await aiofiles.open(save_path, mode="rb")
+            file_byte = await file.read()
         await context.bot.send_document(
             chat_id=update.effective_chat.id,
             document=file_byte,
-            filename=str(pixiv_id) + os.path.splitext(i)[-1],
+            filename=f"{pixiv_id}_{i}{suffix}",
             write_timeout=120, read_timeout=60
         )
+        await file.close()
+
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="发送完成，请按顺序将图片上传到图床后将链接按顺序发送给我"
+    )
+
     chat_status.set_stats(
         chat_id=update.effective_chat.id,
         stats=IMAGE_ADD_REQUIRE_LINK
@@ -172,6 +185,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db_image_info = ImageInfo()
         db_image_info.filenames = [str(pixiv_id) + '_0' + os.path.splitext(illust_detail.get_origin_link(0))[-1]]
         db_image_info.links = [link]
+        db_image_info.page_count = illust_detail.page_count
         db_image_info.name = illust_detail.title
         db_image_info.author = illust_detail.author_name
         db_image_info.pixiv_id = pixiv_id
@@ -184,7 +198,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text="请注意：您上传的图片页数大于一,为%d，目前可能出现错误，敬请谅解。" % illust_detail.meta_pages
+                text="请注意：您上传的图片页数大于一,为%d，目前可能出现错误，敬请谅解。" % illust_detail.page_count
             )
             original_urls = list()
             for i in illust_detail.meta_pages:
@@ -199,7 +213,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         filename = str(pixiv_id) + '_' + str(record.submitted_links_count) + \
                    os.path.splitext(illust_detail.get_origin_link(record.submitted_links_count))[-1]
-        database.add_link_and_filename_by_pixiv_id(pixiv_id, link, filename)
+        await database.add_link_and_filename_by_pixiv_id(pixiv_id, link, filename)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="已添加第%d张图片" % (record.submitted_links_count + 1)
@@ -208,5 +222,5 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if record.submitted_links_count == illust_detail.page_count:
         chat_status.clear(chat_id=update.effective_chat.id)
     else:
-        chat_status.set_attachment(record)
+        chat_status.set_attachment(chat_id=update.effective_chat.id, attachment=record)
     return

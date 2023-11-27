@@ -151,7 +151,7 @@ async def get_image(image_id: int, sub_id: int):
         __tasks['img_' + str(image_id)] = asyncio.Lock()
         lock: asyncio.Lock = __tasks.get('img_' + str(image_id))
     await __tasks['img_' + str(image_id)].acquire()
-    path = __path + image_info.filename
+    path = __path + image_info.filenames[sub_id]
     send_path = None
     if not os.path.exists(path):
         await __download_file(image_id, sub_id)

@@ -69,7 +69,7 @@ async def get_origin(update: Update, context: ContextTypes.DEFAULT_TYPE, query: 
             )
         )
         await asyncio.gather(keyboard_change_task)
-        ori_task = asyncio.create_task(images.get_origin(queue_info.image_id))
+        ori_task = asyncio.create_task(images.get_origin(queue_info.image_id, queue_info.sub_id))
         ori_future = asyncio.gather(ans_task, ori_task)
         _, ori = await ori_future
         if isinstance(ori, BaseException):
@@ -77,7 +77,7 @@ async def get_origin(update: Update, context: ContextTypes.DEFAULT_TYPE, query: 
         else:
             logging.info('正在修改键盘')
             image_info = await images.get_image_info(queue_info.image_id)
-            image_name = str(image_info.name) + os.path.splitext(image_info.filename)[-1]
+            image_name = f"{image_info.name}_{queue_info.sub_id}{os.path.splitext(str(image_info.filenames[queue_info.sub_id]))[-1]}"
             logging.info(image_name)
             send_task = asyncio.create_task(
                 context.bot.send_document(chat_id=chat_id, document=await ori.read(), filename=image_name,

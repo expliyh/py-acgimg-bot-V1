@@ -71,15 +71,15 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
     await context.bot.send_message(
         chat_id=config.developer_chat_id, text=message_to_developer, parse_mode=ParseMode.HTML
     )
-    if part_sent:
-        await context.bot.send_message(
-            chat_id=config.developer_chat_id, text=message_to_developer_part2, parse_mode=ParseMode.HTML
-        )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
         text=message_to_user,
         parse_mode=ParseMode.HTML
     )
+    if part_sent:
+        await context.bot.send_message(
+            chat_id=config.developer_chat_id, text=message_to_developer_part2, parse_mode=ParseMode.HTML
+        )
 
 
 async def bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

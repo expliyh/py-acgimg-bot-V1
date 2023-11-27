@@ -72,7 +72,8 @@ async def setu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         new_current_message = CurrentMessage(
             chat_id=update.effective_chat.id,
             message_id=update.message.id,
-            image_id=setu_id
+            image_id=setu_id,
+            sub_id=sub_id
         )
         queue_update_task = asyncio.create_task(
             database.update_current_message(current_message=new_current_message)
