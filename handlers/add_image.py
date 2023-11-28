@@ -163,6 +163,7 @@ async def submit_pixiv_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
             chat_id=update.effective_chat.id,
             text="自动上传完成，如果过程中没有报错那么则成功"
         )
+        return
 
     chat_status.set_stats(
         chat_id=update.effective_chat.id,
@@ -284,7 +285,7 @@ async def submit_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if latest_code != 200:
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            message="出错：无法访问您提供的链接，请检查后重试"
+            text="出错：无法访问您提供的链接，请检查后重试"
         )
         return
     record: IdSubmitRecord = chat_status.get_attachment(chat_id=update.effective_chat.id)
