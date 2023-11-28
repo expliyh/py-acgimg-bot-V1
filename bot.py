@@ -12,8 +12,11 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, Callb
 from config import config
 import database as db_class
 from database import *
+from configs import configs
+from configs import config as config_handler
 import handlers
 import convert
+from image_bed import image_bed
 from pixiv import PixivAPI, pixiv_api
 
 app = ApplicationBuilder().token(config.bot_token).get_updates_read_timeout(15.0).build()
@@ -133,6 +136,7 @@ if __name__ == '__main__':
     database.create()
     db_class.create_table()
     convert.init()
+    configs = configs.get_config("default")
     handlers_list = get_handlers()
     for i in handlers_list:
         app.add_handler(i)
@@ -142,11 +146,13 @@ if __name__ == '__main__':
     app.add_handler(CommandHandler("bad_command", bad_command))
     app.add_handler(CommandHandler("info", handlers.get_info))
     app.add_handler(CommandHandler("add", handlers.submit_pixiv_id))
+    app.add_handler(CommandHandler('config', config_handler))
     app.add_handler(MessageHandler(filters.TEXT, callback=handlers.message_handler))
 
     # ...and the error handler
     app.add_error_handler(error_handler)
-
+    image_bed.init_image_bed()
+    print(image_bed.__dict__)
     pixapi = PixivAPI()
     pixapi.enable = True
     pixiv_api.enable = True

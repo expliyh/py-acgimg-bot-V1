@@ -6,6 +6,8 @@ import os.path
 from telegram import Update, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
+import config
+import configs
 import database as db_class
 from database import *
 import images
@@ -127,7 +129,13 @@ async def already_get_origin(update: Update):
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query_str = update.callback_query
+    cmd = query_str.data.split(':')
     logging.info(query_str.data)
+    logging.info(update.effective_chat.id)
+    if cmd[0] == "config":
+        if update.effective_chat.id != int(config.config.developer_chat_id):
+            return await update.callback_query.answer(text="未知操作")
+        return await configs.callback_handler(update, context)
     query = json.loads(query_str.data)
     match query['op']:
         case 'gto':  # 获取原始图片

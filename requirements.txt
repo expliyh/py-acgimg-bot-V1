@@ -8,3 +8,5 @@ python-telegram-bot[ext]~=20.6
 pillow~=10.1.0
 pixivpy3~=3.7.4
 singleton-class-decorator~=1.0.1
+b2sdk~=1.27.0
+nest_asyncio~=1.5.8

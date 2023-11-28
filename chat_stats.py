@@ -2,6 +2,7 @@ import singleton_class_decorator
 
 NORMAL = 0
 IMAGE_ADD_REQUIRE_LINK = 1
+CONFIG_IMAGE_BED_SET = 2
 
 
 @singleton_class_decorator.singleton

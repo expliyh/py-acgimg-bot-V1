@@ -1,13 +1,17 @@
+from copy import copy
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncAttrs, async_sessionmaker, AsyncSession
 from config import config
-from sqlalchemy import select, update, create_engine, func
+from sqlalchemy import select, update, create_engine, func, delete
 from sqlalchemy.dialects.mysql import insert
 from . import imginfo
 from . import current_message
 from . import illustinfo
+from . import database_config
 from .imginfo import ImageInfo
 from .current_message import CurrentMessage
 from .illustinfo import IllustInfo
+from .database_config import DatabaseConfig
 import asyncmy
 
 
@@ -97,6 +101,39 @@ class engine:
 
         return current_message
 
+    async def set_config(self, what, detail: dict):
+        async_session = self.new_session()
+        async with async_session() as session:
+            insert_stmt = insert(DatabaseConfig).values(
+                what=what,
+                detail=detail
+            )
+            update_stmt = insert_stmt.on_duplicate_key_update(
+                detail=detail
+            )
+            await session.execute(update_stmt)
+            await session.commit()
+            await session.close()
+        return
+
+    async def get_config(self, what) -> dict | None:
+        async_session = self.new_session()
+        async with async_session() as session:
+            result = await session.execute(select(DatabaseConfig).filter(DatabaseConfig.what == what))
+            tmp=result.scalars().first()
+            if tmp is None:
+                return None
+            resp = copy(tmp.detail)
+        return resp
+
+    async def delete_config(self, what) -> None:
+        async_session = self.new_session()
+        async with async_session() as session:
+            result = await session.execute(delete(DatabaseConfig).where(DatabaseConfig.what == what))
+            await session.commit()
+            await session.close()
+        return
+
     async def add_current_message(self, current_message: CurrentMessage):
         async_session = self.new_session()
         async with async_session() as session:
@@ -165,3 +202,4 @@ def create_table():
     imginfo.ModelBase.metadata.create_all(get_none_async_engine())
     current_message.ModelBase.metadata.create_all(get_none_async_engine())
     illustinfo.ModelBase.metadata.create_all(get_none_async_engine())
+    database_config.ModelBase.metadata.create_all(get_none_async_engine())

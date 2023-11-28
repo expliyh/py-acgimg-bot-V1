@@ -9,6 +9,7 @@ import chat_stats
 import database as db_class
 from database import *
 from pixiv import pixiv_api
+import image_bed
 
 
 def print_hi(name):

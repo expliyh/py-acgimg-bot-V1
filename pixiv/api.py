@@ -1,3 +1,4 @@
+import logging
 import time
 
 from pixivpy3 import *
@@ -6,6 +7,8 @@ from singleton_class_decorator import singleton
 from database import database
 from database import IllustInfo
 from .illust_detail_cache import *
+
+logger = logging.getLogger(__name__)
 
 
 @singleton
@@ -64,6 +67,7 @@ class PixivAPI:
             return
         response = self.__api.auth(refresh_token=config.pixiv_token)
         self.valid_until = int(time.time()) + int(response["expires_in"]) - 60
+        logger.info("已刷新PixivAccessToken")
         return
 
 
