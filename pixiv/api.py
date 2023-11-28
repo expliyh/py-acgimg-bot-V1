@@ -1,3 +1,5 @@
+import time
+
 from pixivpy3 import *
 from config import config
 from singleton_class_decorator import singleton
@@ -18,14 +20,23 @@ class PixivAPI:
             self.__api = AppPixivAPI()
 
         if self.__api is not None:
-            self.__api.auth(refresh_token=config.pixiv_token)
+            response = self.__api.auth(refresh_token=config.pixiv_token)
+            self.valid_until = int(time.time()) + int(response["expires_in"]) - 60
+        else:
+            self.valid_until = None
 
         self.__cache = IllustDetailCache()
 
     async def get_raw(self, pixiv_id: int):
-        return self.__api.illust_detail(pixiv_id)
+        self.token_refresh()
+        response = self.__api.illust_detail(pixiv_id)
+        if response.get("error") is not None:
+            self.token_refresh(force=True)
+        response = self.__api.illust_detail(pixiv_id)
+        return response
 
     async def get_illust_info_by_pixiv_id(self, pixiv_id: int, force_refresh=False, force_deep_refresh=False):
+        self.token_refresh()
         if not self.enable:
             raise Exception
         illust_info = None
@@ -47,6 +58,13 @@ class PixivAPI:
         else:
             pass
         return illust_info
+
+    def token_refresh(self, force: bool = False):
+        if not force and self.valid_until > int(time.time()):
+            return
+        response = self.__api.auth(refresh_token=config.pixiv_token)
+        self.valid_until = int(time.time()) + int(response["expires_in"]) - 60
+        return
 
 
 pixiv_api = PixivAPI()
