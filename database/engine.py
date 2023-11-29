@@ -1,9 +1,11 @@
 from copy import copy
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncAttrs, async_sessionmaker, AsyncSession
-from config import config
+
 from sqlalchemy import select, update, create_engine, func, delete
 from sqlalchemy.dialects.mysql import insert
+import asyncmy
+from config import config
 from . import imginfo
 from . import current_message
 from . import illustinfo
@@ -12,7 +14,6 @@ from .imginfo import ImageInfo
 from .current_message import CurrentMessage
 from .illustinfo import IllustInfo
 from .database_config import DatabaseConfig
-import asyncmy
 
 
 def get_none_async_engine():
@@ -120,7 +121,7 @@ class engine:
         async_session = self.new_session()
         async with async_session() as session:
             result = await session.execute(select(DatabaseConfig).filter(DatabaseConfig.what == what))
-            tmp=result.scalars().first()
+            tmp = result.scalars().first()
             if tmp is None:
                 return None
             resp = copy(tmp.detail)
