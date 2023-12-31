@@ -21,7 +21,8 @@ def get_none_async_engine():
     none_async_engine = create_engine(
         url,
         echo=True,
-        echo_pool=True
+        echo_pool=True,
+        pool_recycle=3600
     )
     return none_async_engine
 
@@ -35,7 +36,8 @@ class engine:
         self.engine = create_async_engine(
             url,
             echo=True,
-            echo_pool=True
+            echo_pool=True,
+            pool_recycle=3600
         )
 
     def new_session(self) -> async_sessionmaker[AsyncSession]:
