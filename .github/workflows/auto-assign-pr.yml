@@ -13,12 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Assign repository owner
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPOSITORY_OWNER: ${{ github.repository_owner }}
-        run: |
-          gh api \
-            --method POST \
-            "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/assignees" \
-            --field "assignees[]=${REPOSITORY_OWNER}"
+        uses: kentaro-m/auto-assign-action@v2.0.2
