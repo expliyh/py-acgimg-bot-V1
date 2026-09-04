@@ -1,7 +1,7 @@
 addReviewers: true
-addAssignees: true
+addAssignees: author
 
-assignees:
+reviewers:
   - expliyh
 
 numberOfAssignees: 0
