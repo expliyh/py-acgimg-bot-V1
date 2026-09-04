@@ -1,0 +1,17 @@
+name: Auto Assign
+
+on:
+  pull_request_target:
+    types: [opened, ready_for_review]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  auto-assign:
+    name: Assign reviewers and author
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign reviewers and author
+        uses: kentaro-m/auto-assign-action@v2.0.2
