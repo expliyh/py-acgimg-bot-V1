@@ -1,7 +1,7 @@
 SQLAlchemy[asyncio]~=2.1.1
 python-dotenv~=1.2.4
 aiofiles~=25.1.0
-asyncmy~=0.2.15
+asyncmy~=0.2.17
 aiohttp~=3.14.5
 aiomysql~=0.3.2
 python-telegram-bot[ext]~=22.8
